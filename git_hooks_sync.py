@@ -14,11 +14,18 @@ def git_shell(git_command):
 
 # 基本目录信息
 git_dir = os.path.abspath(git_shell('git rev-parse --git-dir'))
-project_dir = os.path.os.path.dirname(git_dir)
+project_dir = os.path.dirname(git_dir)
 self_dir = os.path.join(project_dir, 'git_hooks_sync')
 config_path = os.path.join(self_dir, 'config.ini')
 hooks_dir = os.path.join(git_dir, 'hooks')
-scripts_dir = os.path.join(self_dir, 'scripts')
+if os.path.isdir(os.path.join(self_dir, 'hook_scripts')):
+    scripts_dir = os.path.join(self_dir, 'hook_scripts')  # 脚本目录在git_hooks_sync下
+elif os.path.isdir('../hook_scripts'):  # 脚本目录与git_hooks_sync平级
+    scripts_dir = os.path.abspath('../hook_scripts')
+elif os.path.isdir('../../hook_scripts'):  # 脚本目录与项目目录平级
+    scripts_dir = os.path.abspath('../../hook_scripts')
+else:
+    scripts_dir = ''
 
 
 # 清除Windows记事本自动添加的BOM
@@ -57,8 +64,10 @@ def __get_selected_scripts(script_type):
 
 # 运行脚本
 def __run_scripts(script_type, scripts):
+    if not scripts_dir:
+        return  # 不存在脚本目录则退出
     for script in scripts:
-        execfile('%s/%s-scripts/%s.py' % (scripts_dir, script_type, script))
+        execfile('%s/%s-hook_scripts/%s.py' % (scripts_dir, script_type, script))
 
 
 # 主函数
