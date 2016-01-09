@@ -67,7 +67,7 @@ def __run_scripts(script_type, scripts):
     if not scripts_dir:
         return  # 不存在脚本目录则退出
     for script in scripts:
-        execfile('%s/%s-hook_scripts/%s.py' % (scripts_dir, script_type, script))
+        execfile('%s/%s-hook_scripts/%s' % (scripts_dir, script_type, script))
 
 
 # 主函数
